@@ -1,7 +1,7 @@
 require "language/node"
 
 class GeminiCli < Formula
-  desc "A command-line AI workflow tool that connects to your tools, understands your code and accelerates your workflows."
+  desc "Command-line tool to interact with Google Gemini"
   homepage "https://github.com/google-gemini/gemini-cli"
   url "https://github.com/google-gemini/gemini-cli/archive/refs/tags/early-access.tar.gz"
   version "0.1.5"
@@ -10,15 +10,17 @@ class GeminiCli < Formula
 
   depends_on "node"
 
+  keg_only :versioned_formula
+
   def install
-    # Install dependencies
-    system "npm", "install"
-    # Build the executable
+    system "npm", "install", *Language::Node.std_npm_install_args(libexec)
     system "npm", "run", "bundle"
-    # Install all files
-    libexec.install Dir["*"]
-    # Create the symlink
-    bin.install_symlink "#{libexec}/bundle/gemini.js" => "gemini"
+    bin.install_symlink libexec/"bundle/gemini.js" => "gemini"
+  end
+
+  livecheck do
+    url :stable
+    strategy :github_latest
   end
 
   test do
